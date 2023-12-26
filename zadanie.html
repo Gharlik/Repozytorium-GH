@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pl">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>zadanie</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous"> <!--podpiecie arkusza stylów bootstrap -->
+        <link rel="stylesheet" type="text/css" href="zadanie.css">    <!--zalaczenie akrusza stylow css-->
+    </head>
+    <body>
+        <h2 class="col-12 ">podaj panstwo</h2>
+        <div class="row">          
+            <input class="col-12 col-md-2" type="text" id="tekst" ></input>
+            <div class="col-12 col-md-5">
+                <input  type="radio" name="co" value="flag"> flaga
+                <input  type="radio" name="co" value="timezones"> strefa czasowa
+                <input  type="radio" name="co" value="population"> populacja
+            </div>
+        </div>
+        <button onclick="api()" class="col-12">sprawdz</button>
+        <p id="p"></p>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script> <!--dolaczenie skryptu jquery-->
+        <script type="text/javascript">
+            function api(){                 //funkcja wywolywana po nacisnieciu wyslij
+                let panstwo=document.getElementById("tekst").value;         //twozenie zmiennej przechowujacej wartosc elementu o id tekst
+                document.getElementById("tekst").value="";                    //usowanie wartosci w polu tekstowym 
+                fetch("https://restcountries.com/v3.1/name/"+panstwo)                //pobieranie danych z api 
+                .then(res => {                                                 //wynik jako res
+                    if (res.ok) {                                                  //sprawdzenie czy polaczenie zakonczylo sie sukcesem
+                        return res.json()                                        //zwrucenie wyniku jako format jonson
+                    } else {
+                        return Promise.reject(`Http error: ${res.status}`);             //zwrucenie obslugi bledow
+                    }
+                })
+                .then(res => {                                                  //funkcja wywoolywana gdy polaczenie zakonczylo sie sukcesem
+                    console.log(res)
+                    const co = document.querySelectorAll('input[name="co"]');                    //przypisanie do zmiennej kolekcji elementow o id co
+                    let wybrane;
+                    let czy_zaznaczone=0;
+                    for (const con of co) {                                         //petla sprawdzajaca ktory input zostal zaznaczony
+                        if (con.checked) {
+                            wybrane = con.value;
+                            czy_zaznaczone=1;
+                            break;
+                        }
+                    }
+                    if(czy_zaznaczone==1){                                //sprawdzenie czy uzytkownik zaznaczyl co wyswietlic
+                        document.getElementById("p").innerHTML=res[0][wybrane];       //wstwanienie do akapitu p elementu wybranego przez uzytkownika
+                    }
+                    else{
+                        document.getElementById("p").innerHTML="nie wybrano";
+                    }
+                })
+                .catch(error => {                                                //obsluga bledu
+                    document.getElementById("p").innerHTML="nie ma takiego panstwa";
+                });
+            }
+            
+        </script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script><!--dolaczewnie skryptu bootstrap-->
+    </body>
+</html>
